@@ -2,14 +2,14 @@ import React from 'react';
 
 const CartModal = ({ books, onClose, onReturnBook }) => {
   return (
-    <div >
-      <div >
+    <div className="popup-overlay">
+      <div className="popup cart-popup">
         <h2>Your Borrowing Cart</h2>
         
         {books.length === 0 ? (
-          <p >Your cart is empty.</p>
+          <p className="empty-cart-message">Your cart is empty.</p>
         ) : (
-          <div >
+          <div className="cart-books">
             {books.map(book => (
               <div key={book._id} className="cart-book-item">
                 <div className="cart-book-info">
@@ -27,7 +27,7 @@ const CartModal = ({ books, onClose, onReturnBook }) => {
           </div>
         )}
         
-        <div >
+        <div className="popup-actions">
           <button onClick={onClose} className="close-button">Close</button>
         </div>
       </div>

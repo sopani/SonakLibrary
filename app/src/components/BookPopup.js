@@ -4,15 +4,15 @@ const BookPopup = ({ book, onClose, onAddToCart, isInCart }) => {
   if (!book) return null;
 
   return (
-    <div >
-      <div >
+    <div className="popup-overlay">
+      <div className="popup">
         <h2>{book.title}</h2>
         <p>Author: {book.author}</p>
         <p>ISBN: {book.isbn}</p>
-        <p>
+        <p className="copies-info">
           Available copies: {book.availableCopies} of {book.totalCopies}
         </p>
-        <div >
+        <div className="popup-actions">
           <button 
             onClick={() => onAddToCart(book)}
             disabled={book.availableCopies === 0 || isInCart}

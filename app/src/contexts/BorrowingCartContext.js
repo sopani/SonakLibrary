@@ -3,17 +3,27 @@ import React, { createContext, useState, useContext } from 'react';
 // Create a context for the borrowing cart
 const BorrowingCartContext = createContext();
 
+// Maximum number of books a user can borrow
+const MAX_BORROWING_LIMIT = 2;
+
 // Create a provider component
 export const BorrowingCartProvider = ({ children }) => {
   const [borrowingCart, setBorrowingCart] = useState([]);
 
   // Add a book to the cart
   const addToCart = (book) => {
+    // Check if user has reached borrowing limit
+    if (borrowingCart.length >= MAX_BORROWING_LIMIT) {
+      return { success: false, message: `You can only borrow up to ${MAX_BORROWING_LIMIT} books at a time` };
+    }
+
+    // Check if book is available and not already in cart
     if (book.availableCopies > 0 && !borrowingCart.some(item => item._id === book._id)) {
       setBorrowingCart([...borrowingCart, book]);
-      return true; // Return true to indicate success
+      return { success: true };
     }
-    return false; // Return false to indicate failure
+    
+    return { success: false, message: "This book is not available or already in your cart" };
   };
 
   // Remove a book from the cart
@@ -26,12 +36,15 @@ export const BorrowingCartProvider = ({ children }) => {
     return borrowingCart.some(book => book._id === bookId);
   };
 
+  // Check if user has reached borrowing limit
+  const hasReachedBorrowingLimit = () => {
+    return borrowingCart.length >= MAX_BORROWING_LIMIT;
+  };
 
-  // TODO: Clear the cart to be checked if needed 
-  // // Clear the cart to be checked if needed 
-  // const clearCart = () => {
-  //   setBorrowingCart([]);
-  // };
+  // Clear the cart
+  const clearCart = () => {
+    setBorrowingCart([]);
+  };
 
   return (
     <BorrowingCartContext.Provider 
@@ -40,8 +53,10 @@ export const BorrowingCartProvider = ({ children }) => {
         addToCart, 
         removeFromCart, 
         isInCart,
-        // clearCart,
-        cartCount: borrowingCart.length
+        hasReachedBorrowingLimit,
+        clearCart,
+        cartCount: borrowingCart.length,
+        maxBorrowingLimit: MAX_BORROWING_LIMIT
       }}
     >
       {children}

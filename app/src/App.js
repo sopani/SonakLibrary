@@ -18,27 +18,54 @@ const LibraryContent = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   // Use the cart context
-  const { 
-    borrowingCart, 
-    addToCart, 
-    removeFromCart, 
-    isInCart, 
-    hasReachedBorrowingLimit, 
+  const {
+    borrowingCart,
+    addToCart,
+    removeFromCart,
+    isInCart,
+    hasReachedBorrowingLimit,
     cartCount,
-    maxBorrowingLimit 
+    maxBorrowingLimit
   } = useBorrowingCart();
 
   // Use auth context
   const { currentUser, logout } = useAuth();
 
+  // Load books from localStorage or initialize with mock data
   useEffect(() => {
-    setBooks(useEmptyState ? [] : mockBooks);
-  }, [useEmptyState]);
+    const storedBooks = localStorage.getItem('books');
+    if (storedBooks) {
+      setBooks(JSON.parse(storedBooks));
+    } else {
+      // Initialize with mock data if no books exist in localStorage
+      localStorage.setItem('books', JSON.stringify(mockBooks));
+      setBooks(mockBooks);
+    }
+  }, []);
 
   const handleBookClick = (book) => {
     setSelectedBook(book);
     setShowPopup(true);
     setErrorMessage(''); // Clear any previous error messages
+  };
+
+  const updateBookAvailability = (bookId, action) => {
+    const updatedBooks = books.map(b => {
+      if (b._id === bookId) {
+        return {
+          ...b,
+          availableCopies: action === 'borrow' 
+            ? Math.max(0, b.availableCopies - 1)
+            : Math.min(b.totalCopies, b.availableCopies + 1),
+          available: action === 'borrow' 
+            ? b.availableCopies - 1 > 0
+            : b.availableCopies + 1 > 0
+        };
+      }
+      return b;
+    });
+    localStorage.setItem('books', JSON.stringify(updatedBooks));
+    setBooks(updatedBooks);
   };
 
   const closePopup = () => {
@@ -50,10 +77,16 @@ const LibraryContent = () => {
   const handleAddToCart = (book) => {
     const result = addToCart(book);
     if (result.success) {
+      updateBookAvailability(book._id, 'borrow');
       closePopup();
     } else if (result.message) {
       setErrorMessage(result.message);
     }
+  };
+
+  const handleReturnBook = (bookId) => {
+    removeFromCart(bookId);
+    updateBookAvailability(bookId, 'return');
   };
 
   const toggleCartModal = () => {
@@ -94,7 +127,7 @@ const LibraryContent = () => {
             {errorMessage}
           </div>
         )}
-        
+
         {books.length === 0 ? (
           <p>No books available in the library.</p>
         ) : (
@@ -124,7 +157,7 @@ const LibraryContent = () => {
           <CartModal
             books={borrowingCart}
             onClose={closeCartModal}
-            onReturnBook={removeFromCart}
+            onReturnBook={handleReturnBook}
           />
         )}
       </main>

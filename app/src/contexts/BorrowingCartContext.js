@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
 // Create a context for the borrowing cart
 const BorrowingCartContext = createContext();
@@ -9,9 +10,42 @@ const MAX_BORROWING_LIMIT = 2;
 // Create a provider component
 export const BorrowingCartProvider = ({ children }) => {
   const [borrowingCart, setBorrowingCart] = useState([]);
+  const { currentUser } = useAuth();
+
+  // Get user-specific cart key
+  const getCartKey = () => `borrowingCart_${currentUser?.id || ''}`;
+
+  // Load cart from localStorage on mount or when user changes
+  useEffect(() => {
+    if (currentUser) {
+      const storedCart = localStorage.getItem(getCartKey());
+      if (storedCart) {
+        try {
+          const parsedCart = JSON.parse(storedCart);
+          setBorrowingCart(parsedCart);
+        } catch (error) {
+          console.error('Error parsing cart data:', error);
+          setBorrowingCart([]);
+        }
+      }
+    } else {
+      setBorrowingCart([]);
+    }
+  }, [currentUser]);
+
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    if (currentUser && borrowingCart.length > 0) {
+      localStorage.setItem(getCartKey(), JSON.stringify(borrowingCart));
+    }
+  }, [borrowingCart, currentUser]);
 
   // Add a book to the cart
   const addToCart = (book) => {
+    if (!currentUser) {
+      return { success: false, message: "You must be logged in to borrow books" };
+    }
+
     // Check if user has reached borrowing limit
     if (borrowingCart.length >= MAX_BORROWING_LIMIT) {
       return { success: false, message: `You can only borrow up to ${MAX_BORROWING_LIMIT} books at a time` };
@@ -19,7 +53,8 @@ export const BorrowingCartProvider = ({ children }) => {
 
     // Check if book is available and not already in cart
     if (book.availableCopies > 0 && !borrowingCart.some(item => item._id === book._id)) {
-      setBorrowingCart([...borrowingCart, book]);
+      const updatedCart = [...borrowingCart, book];
+      setBorrowingCart(updatedCart);
       return { success: true };
     }
     
@@ -28,7 +63,8 @@ export const BorrowingCartProvider = ({ children }) => {
 
   // Remove a book from the cart
   const removeFromCart = (bookId) => {
-    setBorrowingCart(borrowingCart.filter(book => book._id !== bookId));
+    const updatedCart = borrowingCart.filter(book => book._id !== bookId);
+    setBorrowingCart(updatedCart);
   };
 
   // Check if a book is in the cart
@@ -64,7 +100,7 @@ export const BorrowingCartProvider = ({ children }) => {
   );
 };
 
-// Create a custom hook to use the cart context
+// Custom hook to use the borrowing cart context
 export const useBorrowingCart = () => {
   const context = useContext(BorrowingCartContext);
   if (!context) {

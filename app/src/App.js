@@ -13,7 +13,6 @@ import './App.css';
 // Library content component
 const LibraryContent = () => {
   const [books, setBooks] = useState([]);
-  const [useEmptyState, setUseEmptyState] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [showCartModal, setShowCartModal] = useState(false);
@@ -104,12 +103,6 @@ const LibraryContent = () => {
       <header className="App-header">
         <h1>Library Books</h1>
         <div className="header-controls">
-          <button
-            onClick={() => setUseEmptyState(!useEmptyState)}
-            className="toggle-button"
-          >
-            {useEmptyState ? 'Show Books' : 'Show Empty Library'}
-          </button>
           <div
             className="cart-indicator"
             onClick={toggleCartModal}

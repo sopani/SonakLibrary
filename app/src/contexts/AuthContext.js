@@ -1,9 +1,10 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
 // Mock users for demo purposes
-const mockUsers = [
-  { id: 1, username: 'user1', password: 'password1', name: 'Sonak Pani' },
-  { id: 2, username: 'user2', password: 'password2', name: 'Rahul Gandhi' }
+export const  mockUsers = [
+  { id: 1, username: 'user1', password: 'password1', name: 'Sonak Pani', role: 'user' },
+  { id: 2, username: 'user2', password: 'password2', name: 'Rahul Gandhi', role: 'user' },
+  { id: 3, username: 'admin', password: 'admin123', name: 'Admin', role: 'admin' }
 ];
 
 const AuthContext = createContext();
@@ -40,7 +41,8 @@ export const AuthProvider = ({ children }) => {
       const userData = {
         id: user.id,
         username: user.username,
-        name: user.name
+        name: user.name,
+        role: user.role
       };
       
       // Store in state and localStorage
@@ -59,10 +61,16 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('libraryUser');
   };
 
+  // Check if current user is admin
+  const isAdmin = () => {
+    return currentUser?.role === 'admin';
+  };
+
   // Auth context value
   const value = {
     currentUser,
     isAuthenticated: !!currentUser,
+    isAdmin,
     error,
     login,
     logout

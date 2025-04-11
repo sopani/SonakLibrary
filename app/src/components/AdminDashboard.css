@@ -1,0 +1,61 @@
+.admin-dashboard {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .admin-header h2 {
+    margin: 0;
+  }
+  
+  .back-to-user-button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .dashboard-section {
+    background: white;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .dashboard-section h3 {
+    margin-top: 0;
+  }
+  
+  .borrowed-books-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .borrowed-book-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .book-title {
+    font-weight: bold;
+  }
+  
+  .book-author {
+    color: #666;
+  }
+  
+  .borrower {
+    color: #666;
+  } 

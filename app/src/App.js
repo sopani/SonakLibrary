@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import mockBooks from './mockData';
 import BookCard from './components/BookCard';
 import BookPopup from './components/BookPopup';
 import CartModal from './components/CartModal';
 import LoginPage from './components/LoginPage';
+import AdminDashboard from './components/AdminDashboard';
 import { BorrowingCartProvider, useBorrowingCart } from './contexts/BorrowingCartContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import './App.css';
+import './components/AdminDashboard.css';
 
 // Library content component
 const LibraryContent = () => {
@@ -29,7 +32,7 @@ const LibraryContent = () => {
   } = useBorrowingCart();
 
   // Use auth context
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, isAdmin } = useAuth();
 
   // Load books from localStorage or initialize with mock data
   useEffect(() => {
@@ -116,6 +119,11 @@ const LibraryContent = () => {
           </div>
           <div className="user-profile">
             <span className="user-name">Welcome, {currentUser.name}</span>
+            {isAdmin() && (
+              <Link to="/admin" className="admin-link">
+                Admin Dashboard
+              </Link>
+            )}
             <button onClick={logout} className="logout-button">Logout</button>
           </div>
         </div>
@@ -167,34 +175,38 @@ const LibraryContent = () => {
 
 // Main App component with authentication
 const LibraryApp = () => {
-  const { isAuthenticated } = useAuth();
-
-  // Handle login success
-  const handleLoginSuccess = () => {
-    // Authentication state is already updated in AuthContext
-    //Will use this for  future login success updates 
-  };
-
+  const { isAuthenticated, isAdmin } = useAuth();
 
   return (
-    <>
-      {isAuthenticated ? (
-        <BorrowingCartProvider>
-          <LibraryContent />
-        </BorrowingCartProvider>
-      ) : (
-        <LoginPage onLoginSuccess={handleLoginSuccess} />
-      )}
-    </>
+    <Routes>
+      <Route path="/" element={
+        isAuthenticated ? (
+          <BorrowingCartProvider>
+            <LibraryContent />
+          </BorrowingCartProvider>
+        ) : (
+          <LoginPage />
+        )
+      } />
+      <Route path="/admin" element={
+        isAuthenticated && isAdmin() ? (
+          <AdminDashboard />
+        ) : (
+          <LoginPage />
+        )
+      } />
+    </Routes>
   );
 };
 
 // App wrapper with providers
 function App() {
   return (
-    <AuthProvider>
-      <LibraryApp />
-    </AuthProvider>
+    <Router>
+      <AuthProvider>
+        <LibraryApp />
+      </AuthProvider>
+    </Router>
   );
 }
 

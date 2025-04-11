@@ -1,27 +1,30 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import './LoginPage.css';
 
-const LoginPage = ({ onLoginSuccess }) => {
+const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { login, error } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (login(username, password)) {
-      onLoginSuccess();
+      navigate('/');
     }
   };
 
   return (
     <div className="login-container">
-      <div className="login-form">
-        <h1>Library Login</h1>
+      <div className="login-box">
+        <h2>Library Login</h2>
+        {error && <div className="error-message">{error}</div>}
+        
         <form onSubmit={handleSubmit}>
-          {error && <div className="login-error">{error}</div>}
-          
           <div className="form-group">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="username">Username:</label>
             <input
               type="text"
               id="username"
@@ -32,7 +35,7 @@ const LoginPage = ({ onLoginSuccess }) => {
           </div>
           
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">Password:</label>
             <input
               type="password"
               id="password"
@@ -42,13 +45,21 @@ const LoginPage = ({ onLoginSuccess }) => {
             />
           </div>
           
-          <button type="submit" className="login-button">Log In</button>
+          <button type="submit" className="login-button">Login</button>
         </form>
-        
-        <div className="login-info">
-          <p>Demo accounts:</p>
-          <p>Username: user1, Password: password1</p>
-          <p>Username: user2, Password: password2</p>
+
+        <div className="demo-credentials">
+          <h3>Demo Credentials</h3>
+          <div className="admin-credentials">
+            <h4>Admin Account</h4>
+            <p>Username: admin</p>
+            <p>Password: admin123</p>
+          </div>
+          <div className="user-credentials">
+            <h4>User Accounts</h4>
+            <p>Username: user1 | Password: password1</p>
+            <p>Username: user2 | Password: password2</p>
+          </div>
         </div>
       </div>
     </div>

@@ -27,6 +27,8 @@ export const BorrowingCartProvider = ({ children }) => {
           console.error('Error parsing cart data:', error);
           setBorrowingCart([]);
         }
+      } else {
+        setBorrowingCart([]);
       }
     } else {
       setBorrowingCart([]);
@@ -65,6 +67,9 @@ export const BorrowingCartProvider = ({ children }) => {
   const removeFromCart = (bookId) => {
     const updatedCart = borrowingCart.filter(book => book._id !== bookId);
     setBorrowingCart(updatedCart);
+    if (updatedCart.length === 0) {
+      localStorage.removeItem(getCartKey());
+    }
   };
 
   // Check if a book is in the cart
@@ -80,6 +85,9 @@ export const BorrowingCartProvider = ({ children }) => {
   // Clear the cart
   const clearCart = () => {
     setBorrowingCart([]);
+    if (currentUser) {
+      localStorage.removeItem(getCartKey());
+    }
   };
 
   return (

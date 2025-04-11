@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { mockUsers } from '../contexts/AuthContext';
 import './AdminDashboard.css';
+import { mockUsers } from '../../contexts/AuthContext';
 
 const AdminDashboard = () => {
   const [borrowedBooks, setBorrowedBooks] = useState([]);

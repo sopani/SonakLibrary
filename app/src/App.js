@@ -4,12 +4,11 @@ import mockBooks from './mockData';
 import BookCard from './components/BookCard';
 import BookPopup from './components/BookPopup';
 import CartModal from './components/CartModal';
-import LoginPage from './components/LoginPage';
-import AdminDashboard from './components/AdminDashboard';
+import LoginPage from './components/loginPage/LoginPage';
+import AdminDashboard from './components/adminDashBoard/AdminDashboard';
 import { BorrowingCartProvider, useBorrowingCart } from './contexts/BorrowingCartContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import './App.css';
-import './components/AdminDashboard.css';
 
 // Library content component
 const LibraryContent = () => {
